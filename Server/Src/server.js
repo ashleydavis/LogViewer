@@ -87,6 +87,10 @@ var startServer = function (conf, inputPlugin) {
             });
     });
     
+    app.get('/alive', function(req, res) {
+        res.status(200).end();
+    })
+    
     var io = socketio.listen(server);
     var data = [];
     
@@ -116,7 +120,7 @@ if (require.main === module) {
     var fs = require('fs');
     
     //set up the default path to the configuration file.
-    var configFilePath ="config.json";
+    var configFilePath = "config.json";
     
     //set up the default plugin to use.
     conf.set("inputplugin", './mongodb-input');
@@ -130,6 +134,7 @@ if (require.main === module) {
     
     //check that our file exists
     if (fs.existsSync(configFilePath)) {
+        console.log('Loaded config file: ' + configFilePath);
         conf.pushJsonFile(configFilePath);
     } 
     

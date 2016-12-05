@@ -71,7 +71,7 @@ angular.module('app', [
     $scope.selectedLog = null;
 
     // The number of logs to request from the server.
-    var requestSize = 1000;
+    var requestSize = 300;
 
     // Min logs that should be on screen (to make the scrollbar appear).
     var minLogsToDisplay = 100;
@@ -79,8 +79,8 @@ angular.module('app', [
     // Min logs that should be retreived after filtering.
     var minLogsToRetreive = 100;
 
-    //The number of logs received from the server so far.
-    $scope.receivedLogCount = 0;
+    // The number of logs received from the server so far.
+    var receivedLogCount = 0;
 
     $scope.isValidQuery = true;
 
@@ -100,14 +100,14 @@ angular.module('app', [
         })
         .then(function (incomingLogs) {
                 
-            $scope.receivedLogCount += incomingLogs.length;
+            receivedLogCount += incomingLogs.length;
             addMoreLogs(incomingLogs);
 
             var socket = socketFactory();
             socket.on('update', function (newLog) {
                 assert.isObject(newLog);
                 
-                addLogsToTop(formatLog(newLog));
+                addLogsToTop([formatLog(newLog)]);
             });
         })
         .catch(function (err) {
@@ -276,7 +276,7 @@ angular.module('app', [
         assert.isNumber(requestSize);
         assert.isNumber(minAmountToAdd);
 
-        return requestLogsFromServer($scope.receivedLogCount, requestSize)
+        return requestLogsFromServer(receivedLogCount, requestSize)
             .then(function (incomingLogs) {
                 if (incomingLogs.length === 0) {
                     // No more logs to get.
@@ -284,7 +284,7 @@ angular.module('app', [
                 }
 
                 // Got a bunch of logs.
-                $scope.receivedLogCount += incomingLogs.length;
+                receivedLogCount += incomingLogs.length;
                 
                 var numAddedAfterFilter = addMoreLogs(incomingLogs);
                 if (numAddedAfterFilter < minAmountToAdd) {
